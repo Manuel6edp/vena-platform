@@ -36,7 +36,7 @@ export default function Auth() {
 
     try {
       if (isRegister) {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -44,9 +44,21 @@ export default function Auth() {
           },
         })
         if (error) throw error
-        setMessage(
-          'Registro exitoso. Revisa tu correo para confirmar la cuenta de la institución.'
-        )
+
+        // Crear la fila de la institución con id = auth.uid().
+        // Sólo es posible si signUp devolvió sesión (confirmación de correo
+        // desactivada); si no, la creará AuthContext tras el primer login.
+        if (data.session && data.user) {
+          const { error: profErr } = await supabase
+            .from('institutions')
+            .upsert({ id: data.user.id, name: institution })
+          if (profErr) throw profErr
+          navigate('/dashboard')
+        } else {
+          setMessage(
+            'Registro exitoso. Revisa tu correo para confirmar la cuenta de la institución.'
+          )
+        }
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email,

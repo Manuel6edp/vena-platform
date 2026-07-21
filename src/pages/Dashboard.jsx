@@ -45,15 +45,15 @@ export default function Dashboard() {
 
   // --- Métricas ---
   const available = inventory.filter(
-    (r) => r.status === 'disponible' && expiryState(r.expiration_date) !== 'expired'
+    (r) => r.status === 'disponible' && expiryState(r.expiry_date) !== 'expired'
   )
   const total = totalUnits(available)
 
   const expiringSoon = inventory.filter(
-    (r) => expiryState(r.expiration_date) === 'warning'
+    (r) => expiryState(r.expiry_date) === 'warning'
   )
   const expired = inventory.filter(
-    (r) => expiryState(r.expiration_date) === 'expired'
+    (r) => expiryState(r.expiry_date) === 'expired'
   )
 
   const stock = stockByCombo(inventory)
@@ -66,7 +66,7 @@ export default function Dashboard() {
   const byComponent = COMPONENT_TYPES.map((c) => ({
     ...c,
     units: available
-      .filter((r) => r.component_type === c.value)
+      .filter((r) => r.component === c.value)
       .reduce((s, r) => s + r.units, 0),
   }))
   const maxComponent = Math.max(1, ...byComponent.map((c) => c.units))

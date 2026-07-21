@@ -61,11 +61,11 @@ export default function Alerts() {
 
   // Lotes por vencer y vencidos
   const expiringSoon = inventory
-    .filter((r) => expiryState(r.expiration_date) === 'warning')
-    .sort((a, b) => daysUntil(a.expiration_date) - daysUntil(b.expiration_date))
+    .filter((r) => expiryState(r.expiry_date) === 'warning')
+    .sort((a, b) => daysUntil(a.expiry_date) - daysUntil(b.expiry_date))
   const expired = inventory
-    .filter((r) => expiryState(r.expiration_date) === 'expired')
-    .sort((a, b) => daysUntil(a.expiration_date) - daysUntil(b.expiration_date))
+    .filter((r) => expiryState(r.expiry_date) === 'expired')
+    .sort((a, b) => daysUntil(a.expiry_date) - daysUntil(b.expiry_date))
 
   const noAlerts =
     lowStock.length === 0 && expiringSoon.length === 0 && expired.length === 0
@@ -170,7 +170,7 @@ function AlertSection({ title, count, tone, empty, children }) {
 }
 
 function ExpiryRow({ row, expired = false }) {
-  const d = daysUntil(row.expiration_date)
+  const d = daysUntil(row.expiry_date)
   return (
     <div
       className={`flex items-center justify-between rounded-lg border px-4 py-3 ${
@@ -181,14 +181,14 @@ function ExpiryRow({ row, expired = false }) {
         <BloodBadge type={row.blood_type} />
         <div>
           <p className="font-medium text-slate-800">
-            {componentLabel(row.component_type)}
+            {componentLabel(row.component)}
           </p>
           <p className="text-xs text-slate-500">{row.units} unidades</p>
         </div>
       </div>
       <div className="text-right">
         <p className="text-sm font-semibold text-slate-800">
-          {formatDate(row.expiration_date)}
+          {formatDate(row.expiry_date)}
         </p>
         <Badge tone={expired ? 'red' : 'amber'}>
           {expired ? `Venció hace ${Math.abs(d)} d` : `${d} días`}

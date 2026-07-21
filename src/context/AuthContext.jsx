@@ -23,21 +23,36 @@ export function AuthProvider({ children }) {
     return () => sub.subscription.unsubscribe()
   }, [])
 
-  // Cargar el perfil de la institución cuando hay sesión
+  // Cargar el perfil de la institución cuando hay sesión.
+  // Red de seguridad: si no existe la fila en institutions (p. ej. el trigger
+  // no corrió, o es un usuario creado antes), la crea con id = auth.uid().
   useEffect(() => {
     if (!session?.user) {
       setProfile(null)
       return
     }
     let active = true
-    supabase
-      .from('institutions')
-      .select('*')
-      .eq('id', session.user.id)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (active) setProfile(data)
-      })
+    ;(async () => {
+      const user = session.user
+      let { data } = await supabase
+        .from('institutions')
+        .select('*')
+        .eq('id', user.id)
+        .maybeSingle()
+
+      if (!data) {
+        const name =
+          user.user_metadata?.institution_name || 'Institución sin nombre'
+        const { data: created } = await supabase
+          .from('institutions')
+          .upsert({ id: user.id, name })
+          .select()
+          .maybeSingle()
+        data = created
+      }
+
+      if (active) setProfile(data)
+    })()
     return () => {
       active = false
     }

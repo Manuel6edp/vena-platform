@@ -21,10 +21,10 @@ import {
 } from '../components/ui'
 
 const EMPTY_FORM = {
-  component_type: 'globulos_rojos',
+  component: 'globulos_rojos',
   blood_type: 'O+',
   units: 1,
-  expiration_date: '',
+  expiry_date: '',
   status: 'disponible',
   notes: '',
 }
@@ -49,7 +49,7 @@ export default function Inventory() {
       .from('inventory')
       .select('*')
       .eq('institution_id', user.id)
-      .order('expiration_date', { ascending: true, nullsFirst: false })
+      .order('expiry_date', { ascending: true, nullsFirst: false })
     setRows(data ?? [])
     setLoading(false)
   }
@@ -62,7 +62,7 @@ export default function Inventory() {
   const filtered = useMemo(() => {
     return rows.filter(
       (r) =>
-        (!filterComponent || r.component_type === filterComponent) &&
+        (!filterComponent || r.component === filterComponent) &&
         (!filterBlood || r.blood_type === filterBlood)
     )
   }, [rows, filterComponent, filterBlood])
@@ -77,10 +77,10 @@ export default function Inventory() {
   function openEdit(row) {
     setEditing(row)
     setForm({
-      component_type: row.component_type,
+      component: row.component,
       blood_type: row.blood_type,
       units: row.units,
-      expiration_date: row.expiration_date ?? '',
+      expiry_date: row.expiry_date ?? '',
       status: row.status,
       notes: row.notes ?? '',
     })
@@ -94,10 +94,10 @@ export default function Inventory() {
     setSaving(true)
     const payload = {
       institution_id: user.id,
-      component_type: form.component_type,
+      component: form.component,
       blood_type: form.blood_type,
       units: Number(form.units),
-      expiration_date: form.expiration_date || null,
+      expiry_date: form.expiry_date || null,
       status: form.status,
       notes: form.notes || null,
     }
@@ -121,7 +121,7 @@ export default function Inventory() {
   async function handleDelete(row) {
     if (
       !window.confirm(
-        `¿Eliminar el lote de ${componentLabel(row.component_type)} ${row.blood_type} (${row.units} u.)?`
+        `¿Eliminar el lote de ${componentLabel(row.component)} ${row.blood_type} (${row.units} u.)?`
       )
     )
       return
@@ -218,7 +218,7 @@ export default function Inventory() {
                 {filtered.map((row) => (
                   <tr key={row.id} className="hover:bg-slate-50">
                     <td className="px-4 py-3 font-medium text-slate-800">
-                      {componentLabel(row.component_type)}
+                      {componentLabel(row.component)}
                     </td>
                     <td className="px-4 py-3">
                       <BloodBadge type={row.blood_type} />
@@ -227,7 +227,7 @@ export default function Inventory() {
                       {row.units}
                     </td>
                     <td className="px-4 py-3">
-                      <ExpiryCell date={row.expiration_date} />
+                      <ExpiryCell date={row.expiry_date} />
                     </td>
                     <td className="px-4 py-3">
                       <StatusBadge status={row.status} />
@@ -266,9 +266,9 @@ export default function Inventory() {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label="Componente">
               <select
-                value={form.component_type}
+                value={form.component}
                 onChange={(e) =>
-                  setForm({ ...form, component_type: e.target.value })
+                  setForm({ ...form, component: e.target.value })
                 }
                 className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
               >
@@ -305,9 +305,9 @@ export default function Inventory() {
             <Field label="Fecha de vencimiento">
               <input
                 type="date"
-                value={form.expiration_date}
+                value={form.expiry_date}
                 onChange={(e) =>
-                  setForm({ ...form, expiration_date: e.target.value })
+                  setForm({ ...form, expiry_date: e.target.value })
                 }
                 className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
               />

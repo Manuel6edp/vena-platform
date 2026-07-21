@@ -51,8 +51,8 @@ export function stockByCombo(rows, { onlyAvailable = true } = {}) {
   const map = new Map()
   for (const r of rows) {
     if (onlyAvailable && r.status !== 'disponible') continue
-    if (expiryState(r.expiration_date) === 'expired') continue
-    const k = `${r.component_type}|${r.blood_type}`
+    if (expiryState(r.expiry_date) === 'expired') continue
+    const k = `${r.component}|${r.blood_type}`
     map.set(k, (map.get(k) || 0) + (r.units || 0))
   }
   return map

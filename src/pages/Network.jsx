@@ -45,7 +45,7 @@ export default function Network() {
       inventory.filter(
         (r) =>
           r.status === 'disponible' &&
-          expiryState(r.expiration_date) !== 'expired' &&
+          expiryState(r.expiry_date) !== 'expired' &&
           r.institution_id !== user?.id
       ),
     [inventory, user]
@@ -60,7 +60,7 @@ export default function Network() {
         const rows = availableInventory.filter(
           (r) =>
             r.institution_id === inst.id &&
-            (!component || r.component_type === component) &&
+            (!component || r.component === component) &&
             (!blood || r.blood_type === blood)
         )
         const byBlood = {}
